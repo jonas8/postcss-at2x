@@ -1,6 +1,6 @@
-import path from 'path';
-import postcss from 'postcss';
-import 'string.prototype.includes';
+var path = require('path');
+var postcss = require('postcss');
+require('string.prototype.includes');
 
 const defaultResolutions = [
   '(min--moz-device-pixel-ratio: 1.5)',
@@ -11,9 +11,12 @@ const defaultResolutions = [
   '(min-resolution: 1.5dppx)'
 ];
 
-export default postcss.plugin('postcss-at2x', at2x);
+module.exports = postcss.plugin('postcss-at2x', at2x);
 
-function at2x({ identifier = '@2x' } = {}) {
+function at2x({ 
+  identifier = '@2x',
+  use_assets_size = true 
+} = {}) {
   return function(root) {
     // Create an empty rule so that all the new rules can be appended to this
     // and then append it at the end.
@@ -45,8 +48,12 @@ function at2x({ identifier = '@2x' } = {}) {
         // needs it for regex search
         decl.value = removeKeyword(decl.value);
 
-        if (backgroundSize) {
-          retinaRule.append(postcss.decl(backgroundSize));
+        if (!backgroundSize && use_assets_size) {
+          var url = decl.value.match(/\((.*?)\)/)[1].replace(/('|")/g,'');
+          retinaRule.append(postcss.decl({
+            prop: 'background-size',
+            value: `size('${url}')`
+          }))
         }
 
         // Create the rules and append them to the container
