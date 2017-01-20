@@ -50,7 +50,7 @@ function at2x({
 
         if (backgroundSize) {
           retinaRule.append(postcss.decl(backgroundSize));
-        } else if(use_assets_size) {
+        } else if(use_assets_size && !decl.value.includes('#')/*ignore postcss-easysprite files*/) {
           var url = decl.value.match(/\((.*?)\)/)[1].replace(/('|")/g,'');
           retinaRule.append(postcss.decl({
             prop: 'background-size',
