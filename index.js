@@ -48,7 +48,9 @@ function at2x({
         // needs it for regex search
         decl.value = removeKeyword(decl.value);
 
-        if (!backgroundSize && use_assets_size) {
+        if (backgroundSize) {
+          retinaRule.append(postcss.decl(backgroundSize));
+        } else if(use_assets_size) {
           var url = decl.value.match(/\((.*?)\)/)[1].replace(/('|")/g,'');
           retinaRule.append(postcss.decl({
             prop: 'background-size',
